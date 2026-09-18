@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Commission Wallet</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+            color: white;
+        }
+
+        .blue {
+            background: #2196f3;
+        }
+
+        .green {
+            background: #198754;
+        }
+
+        .red {
+            background: #dc3545;
+        }
+
+        .yellow {
+            background: #ffc107;
+            color: #222;
+        }
+
+        .card {
+            background: #198754;
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .balance {
+            font-size: 35px;
+            font-weight: bold;
+        }
+
+        .form-box,
+        .history {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .form-box h2,
+        .history h2 {
+            margin-top: 0;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .submit {
+            margin-top: 20px;
+            background: #198754;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #263238;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .badge {
+            padding: 5px 9px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .pending {
+            background: #ffc107;
+        }
+
+        .approved {
+            background: #198754;
+            color: white;
+        }
+
+        .rejected {
+            background: #dc3545;
+            color: white;
+        }
+
+        .action-form {
+            display: inline;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        @media(max-width:600px) {
+
+            body {
+                padding: 10px;
+            }
+
+            .balance {
+                font-size: 28px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <div>
+
+            <h1>💰 Commission Wallet</h1>
+
+            <p>
+                Money Tracker Admin Commission
+            </p>
+
+        </div>
+
+        <div class="buttons">
+
+            <a
+                href="{{ url_for('admin') }}"
+                class="btn blue"
+            >
+                Admin Dashboard
+            </a>
+
+            <a
+                href="{{ url_for('logout') }}"
+                class="btn red"
+            >
+                Logout
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- CURRENT BALANCE -->
+
+    <div class="card">
+
+        <div class="card-title">
+            Available Commission Balance
+        </div>
+
+        <div class="balance">
+
+            KSh {{ "%.2f"|format(commission_balance) }}
+
+        </div>
+
+    </div>
+
+
+    <!-- WITHDRAW FORM -->
+
+    <div class="form-box">
+
+        <h2>
+            📱 Withdraw Commission
+        </h2>
+
+        <p>
+            Enter the M-Pesa number and amount you want
+            to withdraw.
+        </p>
+
+        <form
+            method="POST"
+            action="{{ url_for('commission_withdraw') }}"
+        >
+
+            <label for="phone_number">
+                M-Pesa Number
+            </label>
+
+            <input
+                type="text"
+                id="phone_number"
+                name="phone_number"
+                placeholder="07XXXXXXXX"
+                required
+            >
+
+            <label for="amount">
+                Withdrawal Amount
+            </label>
+
+            <input
+                type="number"
+                id="amount"
+                name="amount"
+                min="1"
+                step="0.01"
+                placeholder="Enter amount"
+                required
+            >
+
+            <button
+                type="submit"
+                class="submit"
+            >
+                💸 Request Commission Withdrawal
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <!-- WITHDRAWAL HISTORY -->
+
+    <div class="history">
+
+        <h2>
+            📋 Commission Withdrawal History
+        </h2>
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                <tr>
+
+                    <th>ID</th>
+                    <th>M-Pesa Number</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Action</th>
+
+                </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% if withdrawals %}
+
+                    {% for withdrawal in withdrawals %}
+
+                    <tr>
+
+                        <td>
+                            {{ withdrawal[0] }}
+                        </td>
+
+                        <td>
+                            {{ withdrawal[1] }}
+                        </td>
+
+                        <td>
+                            KSh {{ "%.2f"|format(withdrawal[2]) }}
+                        </td>
+
+                        <td>
+
+                            {% if withdrawal[3] == "Pending" %}
+
+                                <span class="badge pending">
+                                    Pending
+                                </span>
+
+                            {% elif withdrawal[3] == "Approved" %}
+
+                                <span class="badge approved">
+                                    Approved
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge rejected">
+                                    Rejected
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+                            {{ withdrawal[4] }}
+                        </td>
+
+                        <td>
+
+                            {% if withdrawal[3] == "Pending" %}
+
+                                <form
+                                    method="POST"
+                                    class="action-form"
+                                    action="{{ url_for(
+                                        'approve_commission_withdrawal',
+                                        withdrawal_id=withdrawal[0]
+                                    ) }}"
+                                >
+
+                                    <button
+                                        type="submit"
+                                        class="btn green"
+                                    >
+                                        Approve
+                                    </button>
+
+                                </form>
+
+
+                                <form
+                                    method="POST"
+                                    class="action-form"
+                                    action="{{ url_for(
+                                        'reject_commission_withdrawal',
+                                        withdrawal_id=withdrawal[0]
+                                    ) }}"
+                                >
+
+                                    <button
+                                        type="submit"
+                                        class="btn red"
+                                    >
+                                        Reject
+                                    </button>
+
+                                </form>
+
+                            {% else %}
+
+                                Processed
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <tr>
+
+                        <td
+                            colspan="6"
+                            style="text-align:center;padding:20px;"
+                        >
+
+                            No commission withdrawals yet.
+
+                        </td>
+
+                    </tr>
+
+                {% endif %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- TOTAL WITHDRAWN -->
+
+    <div class="card">
+
+        <div class="card-title">
+            Total Approved Commission Withdrawals
+        </div>
+
+        <div class="balance">
+
+            KSh {{ "%.2f"|format(total_withdrawn) }}
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

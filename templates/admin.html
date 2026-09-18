@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Money Tracker - Admin</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            color: #222;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            margin: 0;
+            color: #263238;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-blue {
+            background: #2196f3;
+        }
+
+        .btn-green {
+            background: #28a745;
+        }
+
+        .btn-yellow {
+            background: #ffc107;
+            color: #222;
+        }
+
+        .btn-red {
+            background: #dc3545;
+        }
+
+        .btn-gray {
+            background: #6c757d;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            padding: 20px;
+            border-radius: 8px;
+            color: white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+
+        .card-blue {
+            background: #2196f3;
+        }
+
+        .card-green {
+            background: #28a745;
+        }
+
+        .card-red {
+            background: #dc3545;
+        }
+
+        .card-dark {
+            background: #263238;
+        }
+
+        .card-title {
+            font-size: 15px;
+            margin-bottom: 10px;
+        }
+
+        .card-value {
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        .notice {
+            background: #dff6ff;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .section {
+            background: white;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            padding: 14px 18px;
+            font-size: 19px;
+            font-weight: bold;
+            background: #263238;
+            color: white;
+        }
+
+        .section-title.yellow {
+            background: #ffc107;
+            color: #222;
+        }
+
+        .section-title.green {
+            background: #198754;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        th {
+            background: #263238;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+
+        td {
+            padding: 11px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:hover {
+            background: #f7f7f7;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .badge-user {
+            background: #e9ecef;
+            color: #333;
+        }
+
+        .badge-admin {
+            background: #198754;
+            color: white;
+        }
+
+        .badge-active {
+            background: #198754;
+            color: white;
+        }
+
+        .badge-inactive {
+            background: #dc3545;
+            color: white;
+        }
+
+        .badge-income {
+            background: #198754;
+            color: white;
+        }
+
+        .badge-expense {
+            background: #dc3545;
+            color: white;
+        }
+
+        .badge-pending {
+            background: #ffc107;
+            color: #222;
+        }
+
+        .badge-approved {
+            background: #198754;
+            color: white;
+        }
+
+        .badge-rejected {
+            background: #dc3545;
+            color: white;
+        }
+
+        .action-form {
+            display: inline;
+        }
+
+        .empty {
+            padding: 20px;
+            text-align: center;
+            color: #777;
+        }
+
+        @media (max-width: 900px) {
+
+            .cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            body {
+                padding: 10px;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                align-items: flex-start;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- ================================================= -->
+    <!-- HEADER -->
+    <!-- ================================================= -->
+
+    <div class="header">
+
+        <div>
+
+            <h1>🛠️ Admin Dashboard</h1>
+
+            <div class="subtitle">
+                Money Tracker Administration
+            </div>
+
+        </div>
+
+        <div class="buttons">
+
+            <a href="{{ url_for('dashboard') }}"
+               class="btn btn-blue">
+                User Dashboard
+            </a>
+
+            <a href="{{ url_for('admin_requests') }}"
+               class="btn btn-yellow">
+                💳 Payment Requests
+            </a>
+
+            <a href="{{ url_for('admin_commission') }}"
+               class="btn btn-green">
+                💰 Commission Wallet
+            </a>
+
+            <a href="{{ url_for('logout') }}"
+               class="btn btn-red">
+                Logout
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- STATISTICS -->
+    <!-- ================================================= -->
+
+    <div class="cards">
+
+        <div class="card card-blue">
+
+            <div class="card-title">
+                Total Users
+            </div>
+
+            <div class="card-value">
+                {{ total_users }}
+            </div>
+
+        </div>
+
+
+        <div class="card card-green">
+
+            <div class="card-title">
+                Total Income
+            </div>
+
+            <div class="card-value">
+                KSh {{ "%.2f"|format(total_income) }}
+            </div>
+
+        </div>
+
+
+        <div class="card card-red">
+
+            <div class="card-title">
+                Total Expenses
+            </div>
+
+            <div class="card-value">
+                KSh {{ "%.2f"|format(total_expenses) }}
+            </div>
+
+        </div>
+
+
+        <div class="card card-dark">
+
+            <div class="card-title">
+                Platform Balance
+            </div>
+
+            <div class="card-value">
+                KSh {{ "%.2f"|format(platform_balance) }}
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- COMMISSION NOTICE -->
+    <!-- ================================================= -->
+
+    <div class="notice">
+
+        💰 <strong>Withdrawal Commission:</strong>
+
+        Commission collected from approved withdrawals
+        is stored separately in the
+        <strong>Commission Wallet</strong>.
+
+        <br><br>
+
+        <a href="{{ url_for('admin_commission') }}"
+           class="btn btn-green">
+            Open Commission Wallet
+        </a>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- PAYMENT REQUESTS -->
+    <!-- ================================================= -->
+
+    <div class="section">
+
+        <div class="section-title yellow">
+
+            💰 Deposit & Withdrawal Requests
+
+        </div>
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                <tr>
+
+                    <th>ID</th>
+                    <th>User Email</th>
+                    <th>Type</th>
+                    <th>Phone</th>
+                    <th>Amount</th>
+                    <th>Commission</th>
+                    <th>Net Amount</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Action</th>
+
+                </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% if requests %}
+
+                    {% for r in requests %}
+
+                    <tr>
+
+                        <td>
+                            {{ r[0] }}
+                        </td>
+
+                        <td>
+                            {{ r[1] }}
+                        </td>
+
+                        <td>
+                            {{ r[2] }}
+                        </td>
+
+                        <td>
+                            {{ r[3] }}
+                        </td>
+
+                        <td>
+                            KSh {{ "%.2f"|format(r[4]) }}
+                        </td>
+
+                        <td>
+                            KSh {{ "%.2f"|format(r[6]) }}
+                        </td>
+
+                        <td>
+                            KSh {{ "%.2f"|format(r[7]) }}
+                        </td>
+
+                        <td>
+
+                            {% if r[8] == "Pending" %}
+
+                                <span class="badge badge-pending">
+                                    Pending
+                                </span>
+
+                            {% elif r[8] == "Approved" %}
+
+                                <span class="badge badge-approved">
+                                    Approved
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge badge-rejected">
+                                    Rejected
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+                            {{ r[9] }}
+                        </td>
+
+                        <td>
+
+                            {% if r[8] == "Pending" %}
+
+                                <form
+                                    class="action-form"
+                                    method="POST"
+                                    action="{{ url_for(
+                                        'approve_request',
+                                        request_id=r[0]
+                                    ) }}"
+                                >
+
+                                    <button
+                                        class="btn btn-green"
+                                        type="submit"
+                                    >
+                                        Approve
+                                    </button>
+
+                                </form>
+
+
+                                <form
+                                    class="action-form"
+                                    method="POST"
+                                    action="{{ url_for(
+                                        'reject_request',
+                                        request_id=r[0]
+                                    ) }}"
+                                >
+
+                                    <button
+                                        class="btn btn-red"
+                                        type="submit"
+                                    >
+                                        Reject
+                                    </button>
+
+                                </form>
+
+                            {% else %}
+
+                                <span>
+                                    Processed
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <tr>
+
+                        <td colspan="10"
+                            class="empty">
+
+                            No payment requests yet.
+
+                        </td>
+
+                    </tr>
+
+                {% endif %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- REGISTERED USERS -->
+    <!-- ================================================= -->
+
+    <div class="section">
+
+        <div class="section-title">
+
+            👥 Registered Users
+
+        </div>
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                <tr>
+
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Account Type</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+
+                </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for user in users %}
+
+                <tr>
+
+                    <td>
+                        {{ user[0] }}
+                    </td>
+
+                    <td>
+                        {{ user[1] }}
+                    </td>
+
+                    <td>
+                        {{ user[2] }}
+                    </td>
+
+                    <td>
+
+                        {% if user[3] == 1 %}
+
+                            <span class="badge badge-admin">
+                                Administrator
+                            </span>
+
+                        {% else %}
+
+                            <span class="badge badge-user">
+                                User
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+
+                        {% if user[4] == 1 %}
+
+                            <span class="badge badge-active">
+                                Active
+                            </span>
+
+                        {% else %}
+
+                            <span class="badge badge-inactive">
+                                Inactive
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+
+                        <a
+                            href="{{ url_for(
+                                'admin_user',
+                                user_id=user[0]
+                            ) }}"
+                            class="btn btn-blue"
+                        >
+                            View
+                        </a>
+
+
+                        {% if user[3] != 1 %}
+
+                            {% if user[4] == 1 %}
+
+                                <form
+                                    class="action-form"
+                                    method="POST"
+                                    action="{{ url_for(
+                                        'deactivate_user',
+                                        user_id=user[0]
+                                    ) }}"
+                                >
+
+                                    <button
+                                        type="submit"
+                                        class="btn btn-yellow"
+                                    >
+                                        Deactivate
+                                    </button>
+
+                                </form>
+
+                            {% else %}
+
+                                <form
+                                    class="action-form"
+                                    method="POST"
+                                    action="{{ url_for(
+                                        'activate_user',
+                                        user_id=user[0]
+                                    ) }}"
+                                >
+
+                                    <button
+                                        type="submit"
+                                        class="btn btn-green"
+                                    >
+                                        Activate
+                                    </button>
+
+                                </form>
+
+                            {% endif %}
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- ALL TRANSACTIONS -->
+    <!-- ================================================= -->
+
+    <div class="section">
+
+        <div class="section-title">
+
+            📋 All Transactions
+
+        </div>
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                <tr>
+
+                    <th>ID</th>
+                    <th>User Email</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Description</th>
+                    <th>Date</th>
+
+                </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% if all_transactions %}
+
+                    {% for transaction in all_transactions %}
+
+                    <tr>
+
+                        <td>
+                            {{ transaction[0] }}
+                        </td>
+
+                        <td>
+                            {{ transaction[1] }}
+                        </td>
+
+                        <td>
+
+                            {% if transaction[2] == "Income" %}
+
+                                <span class="badge badge-income">
+                                    Income
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge badge-expense">
+                                    Expense
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+                            KSh {{ "%.2f"|format(transaction[3]) }}
+                        </td>
+
+                        <td>
+                            {{ transaction[4] }}
+                        </td>
+
+                        <td>
+                            {{ transaction[5] }}
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <tr>
+
+                        <td colspan="6"
+                            class="empty">
+
+                            No transactions yet.
+
+                        </td>
+
+                    </tr>
+
+                {% endif %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>
